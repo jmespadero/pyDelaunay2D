@@ -1,5 +1,5 @@
 """
-Simple structured Delaunay triangulation in 2D
+Simple structured Delaunay triangulation in 2D with Bowyer–Watson algorithm.
   
 Written by Jose M. Espadero ( http://github.com/jmespadero/pyDelaunay2D )
 Based on code from Ayron Catteau. Published at http://github.com/ayron/delaunay
