@@ -1,16 +1,21 @@
 PyDelaunay2D
 ==============
 
-A Simple structured Delaunay 2D triangulation package.
-  
+A Simple structured Delaunay 2D triangulation package.  
 Written by Jose M. Espadero ( http://github.com/jmespadero/pyDelaunay2D )
 
-Just pretend to be simple and didactic. It is written in pure python + numpy 
-(tested with python2.6 and python3). 
+Just pretend to be a simple and didactic implementation of the Bowyer-Watson algorithm. 
+It is written in pure python + [numpy](http://www.numpy.org/) (tested with python2.6 and python3).
+A test example is provided showing how to call and plot the results using matplotlib.
 
-Lack of robustness checks, so do not expect to work on degenerate set of points.
+Lack of robustness checks, so do not expect to work on degenerate set of points. If you need to compute triangulation on big or degenerate set of points, try [scipy.spatial.Delaunay](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html) instead.
+
+## So why?
+
+Because sometimes it is not possible to import the complete scipy.spatial package (for example, when running a script inside of [blender](https://www.blender.org/) )
 
 ## References:
-*  https://en.wikipedia.org/wiki/Delaunay_triangulation
-*  https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
-*  http://www.geom.uiuc.edu/~samuelp/del_project.html
+* https://en.wikipedia.org/wiki/Delaunay_triangulation
+* https://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
+* http://www.geom.uiuc.edu/~samuelp/del_project.html
+* https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html
