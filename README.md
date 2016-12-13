@@ -5,9 +5,9 @@ Simple structured Delaunay triangulation in 2D
   
 Written by Jose M. Espadero ( http://github.com/jmespadero/pyDelaunay2D )
 
-Pretend to be simple and didactic. The only requisite is numpy.
+Just pretend to be simple and didactic. The only requisite is numpy.
 
-Lack of robustness checks, so do not spect to work on degenerate set of points.
+Lack of robustness checks, so do not expect to work on degenerate set of points.
 
 # References:
 *  https://en.wikipedia.org/wiki/Delaunay_triangulation
