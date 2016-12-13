@@ -101,15 +101,34 @@ class Delaunay2D:
             if np.linalg.norm(T.center - p) <= T.radius:
                 bad_triangles.append(T)
 
-        # Find the convex hull of the bad triangles.
-        # Expressed as a list of edges (point pairs) in ccw order
-        boundary = self.Boundary(bad_triangles)
-
         #Remove triangles too near of point p
         for T in bad_triangles:
             self.triangles.remove(T)
+            
+        # Find the boundary (convex hull) of the bad triangles.
+        # expressed as a list of edges (point pairs) in ccw order
+        boundary = []
+        T = bad_triangles[0]
+        edge = 0
+        #Backtracking on each bad_triangle searching edges in the boundary
+        while True:                    
+            if T.neighbour[edge] in bad_triangles:
+                #Continue search in neighbour triangle
+                last = T
+                T = T.neighbour[edge]
+                edge = (T.neighbour.index(last) + 1) % 3 
 
-        # Retriangle the hole left by those triangles
+            else:   # Found an edge that is on the boundary
+                # Add edge to boundary list
+                boundary.append((T.v[(edge+1)%3], T.v[(edge+2)%3], T.neighbour[edge]))
+                #Move to next edge in this triangle
+                edge = (edge + 1) % 3
+
+                #Check if boundary is a closed loop
+                if boundary[0][0] == boundary[-1][1]:
+                    break
+
+        # Retriangle the hole left by bad_triangles
         new_triangles = []
         for edge in boundary:
             #Create a new Triangle using point p and the edge
@@ -138,36 +157,7 @@ class Delaunay2D:
    
         #Add triangles to our triangulation
         self.triangles.extend(new_triangles)
-
       
-    def Boundary(self, bad_triangles):
-        """Build the CCW boundary of a set of triangles.
-        """
-
-        boundary = []
-
-        #Backtracking on each triangle searching edges in the boundary
-        T = bad_triangles[0]
-        edge = 0
-        while True:                    
-            if T.neighbour[edge] in bad_triangles:
-                #Move to neighbour triangle
-                last = T
-                T = T.neighbour[edge]
-                edge = (T.neighbour.index(last) + 1) % 3 
-
-            else:   # Found an edge that is on the boundary
-                # Add edge to boundary list
-                boundary.append((T.v[(edge+1)%3], T.v[(edge+2)%3], T.neighbour[edge]))
-                #Move to next edge in this triangle
-                edge = (edge + 1) % 3
-
-                #Check if boundary is a closed loop
-                if boundary[0][0] == boundary[-1][1]:
-                    break
-
-        return boundary
-
     def exportDT(self):
         """Export the current Delaunay Triangulation.
         """
