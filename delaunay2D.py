@@ -25,7 +25,7 @@ class Triangle:
         self.radius = None
 
     def __repr__(self):
-        """Dump indexes as a text string"""
+        """Dump indexes of the triangle as a text string"""
         return 'tri< ' + str(self.v) + ' >'
 
 
@@ -88,9 +88,18 @@ class Delaunay2D:
         center = np.dot(bary_coords, pts)
         # radius = np.linalg.norm(pts[0] - center) # euclidean distance
         radius = np.sum(np.square(pts[0] - center))  # squared distance
-        # print("center:", center, "radius:", radius)
         return (center, radius)
 
+    def inCircle(self, tri, p):
+        """Check if point p is inside of circumcircle around the triangle tri.
+        This is a robust predicate, slower than compare distance to centers
+        ref: https://www.cs.cmu.edu/~quake/robust.html
+        """        
+        m1 = np.asarray([self.coords[v] - self.coords[p] for v in tri.v]) 
+        m2 = np.sum(np.square(m1), axis=1).reshape((3,1))
+        m = np.hstack((m1,m2)) # The 3x3 matrix to check
+        return (np.linalg.det(m) <=0)
+        
     def AddPoint(self, p):
         """Add a new point to the current triangulation.
         """
@@ -102,8 +111,10 @@ class Delaunay2D:
         # Search the triangle(s) whose circumcircle contains p
         bad_triangles = []
         for T in self.triangles:
-            # if np.linalg.norm(T.center - p) <= T.radius: # euclidean distance
-            if np.sum(np.square(T.center - p)) <= T.radius:  # squared distance
+            # Choose one of three methods: the clean, the fast or the robust...
+            # if np.linalg.norm(T.center - p) <= T.radius: # clean euclidean distance
+            # if self.inCircle(T, idx): # Robust "point inside circle" check.
+            if np.sum(np.square(T.center - p)) <= T.radius: # fast squared distance
                 bad_triangles.append(T)
 
         # Remove triangles too near of point p
