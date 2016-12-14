@@ -18,11 +18,11 @@ if __name__ == '__main__':
     print("seeds:\n", seeds)
     print("BBox Min:", np.amin(seeds, axis=0), "Bbox Max: ", np.amax(seeds, axis=0) )
 
-    #Compute our Delaunay triangulation of seeds.
-    #It is recommended to use the radius to create a noticeable margin
+    # Compute our Delaunay triangulation of seeds.
+    # It is recommended to use the radius to create a noticeable margin
     DT = D.Delaunay2D(seeds, 100 * radius)
 
-    #Extract our result (without extended BBox coordinates)
+    # Extract our result (without extended BBox coordinates)
     DT_x, DT_y, DT_tris = DT.exportDT()
     print("DT_tris:", len(DT_tris), "triangles")
     print("DT_tris:\n", DT_tris)
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     ax.margins(0.1)
     ax.set_aspect('equal')
 
-    #plot our Delaunay triangulation (plot in blue)
+    # Plot our Delaunay triangulation (plot in blue)
     ax.triplot(matplotlib.tri.Triangulation(DT_x, DT_y, DT_tris), 'bo-.')
 
     #DEBUG: Use matplotlib method to create a Delaunay triangulation (plot in green)

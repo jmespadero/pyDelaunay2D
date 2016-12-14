@@ -17,8 +17,8 @@ class Triangle:
         """Constructor from 3 indexes to vertex"""
         self.v = [a, b, c]
         self.neighbour = [None]*3  # Adjacent triangles
-        #Avoid computing circumcenter here, so the triangle does
-        #not need to know its coordinates
+        # Avoid computing circumcenter here, so the triangle does
+        # not need to know its coordinates
         self.center = None
         self.radius = None
 
@@ -44,7 +44,7 @@ class Delaunay2D:
         # Compute BBox
         smin= np.amin(seeds, axis=0)
         smax= np.amax(seeds, axis=0)
-        #If no margin is given, compute one based on the diagonal
+        # If no margin is given, compute one based on the diagonal
         if not margin:
             margin = 50*np.linalg.norm(smax- smin)
             
@@ -65,7 +65,7 @@ class Delaunay2D:
         T2.center, T2.radius = self.Circumcenter(T2)
         self.triangles = [T1, T2]        
 
-        #Insert all seeds one by one
+        # Insert all seeds one by one
         for s in seeds:
             self.AddPoint(s)
             
@@ -83,7 +83,8 @@ class Delaunay2D:
         bary_coords = x[:-1]  
         
         center = np.dot(bary_coords,pts)    
-        radius = np.linalg.norm(pts[0] - center)
+        #radius = np.linalg.norm(pts[0] - center) # euclidean distance
+        radius = np.sum(np.square(pts[0] - center)) # squared distance
         #print("center:", center, "radius:", radius)
         return (center,radius)    
 
@@ -95,58 +96,62 @@ class Delaunay2D:
         #print("coords[", idx,"] ->",p)
         self.coords.append(p)
         
-        # Search for the triangle(s) too near of p
+        # Search the triangle(s) whose circumcircle contains p
         bad_triangles = []
-        for T in self.triangles:            
-            if np.linalg.norm(T.center - p) <= T.radius:
+        for T in self.triangles:
+            #if np.linalg.norm(T.center - p) <= T.radius: # euclidean distance
+            if np.sum(np.square(T.center - p)) <= T.radius: # squared distance
                 bad_triangles.append(T)
 
-        #Remove triangles too near of point p
+        # Remove triangles too near of point p
         for T in bad_triangles:
             self.triangles.remove(T)
             
-        # Find the boundary (convex hull) of the bad triangles.
-        # expressed as a list of edges (point pairs) in ccw order
+        # Find the CCW boundary (star shape) of the bad triangles,
+        # expressed as a list of edges (point pairs) and the opposite
+        # triangle to each edge.
         boundary = []
+        # Choose a random triangle and edge
         T = bad_triangles[0]
         edge = 0
-        #Backtracking on each bad_triangle searching edges in the boundary
-        while True:                    
-            if T.neighbour[edge] in bad_triangles:
-                #Continue search in neighbour triangle
+        while True:
+            # Check if edge is on the boundary...
+            # if opposite triangle of this edge is external to the list            
+            if not T.neighbour[edge] in bad_triangles:
+                # Insert edge and external triangle into boundary list
+                boundary.append((T.v[(edge+1)%3], T.v[(edge-1)%3], T.neighbour[edge]))
+
+                # Move to next CCW edge in this triangle
+                edge = (edge + 1) % 3
+                
+                # Check if boundary is a closed loop
+                if boundary[0][0] == boundary[-1][1]:
+                    break
+            else:    
+                # Move to next CCW edge in neighbour triangle
                 last = T
                 T = T.neighbour[edge]
                 edge = (T.neighbour.index(last) + 1) % 3 
 
-            else:   # Found an edge that is on the boundary
-                # Add edge to boundary list
-                boundary.append((T.v[(edge+1)%3], T.v[(edge+2)%3], T.neighbour[edge]))
-                #Move to next edge in this triangle
-                edge = (edge + 1) % 3
-
-                #Check if boundary is a closed loop
-                if boundary[0][0] == boundary[-1][1]:
-                    break
-
         # Retriangle the hole left by bad_triangles
         new_triangles = []
         for edge in boundary:
-            #Create a new Triangle using point p and the edge
+            # Create a new Triangle using point p and the edge
             T = Triangle(idx, edge[0], edge[1])
             T.center, T.radius = self.Circumcenter(T)
 
-            #Set triangle stored at edge[2] as neighbour of T
+            # Set external triangle stored at edge[2] as neighbour of T
             T.neighbour[0] = edge[2]
             
-            #Set T as neighbour of triangle stored at edge[2]
+            # Set T as neighbour of triangle stored at edge[2]
             if T.neighbour[0]:
                 #search the reversed edge in T.neighbour[0].v
                 tmp_v = T.neighbour[0].v
                 for i in range(3):
                     if edge[1] == tmp_v[i] and edge[0] == tmp_v[(i+1)%3]:
-                        T.neighbour[0].neighbour[(i+2)%3] = T
+                        T.neighbour[0].neighbour[(i-1)%3] = T
 
-            #Add triangle to a temporal list
+            # Add triangle to a temporal list
             new_triangles.append(T)
 
         # Link the new triangles
@@ -155,17 +160,17 @@ class Delaunay2D:
             T.neighbour[2] = new_triangles[(i-1) % N]   # back
             T.neighbour[1] = new_triangles[(i+1) % N]   # forward
    
-        #Add triangles to our triangulation
+        # Add triangles to our triangulation
         self.triangles.extend(new_triangles)
       
     def exportDT(self):
         """Export the current Delaunay Triangulation.
         """
-        #Filter out coordinates in the extended BBox
+        # Filter out coordinates in the extended BBox
         xs = [p[0] for p in self.coords[4:] ]
         ys = [p[1] for p in self.coords[4:] ]        
         
-        #Filter out triangles with any vertex in the extended BBox
+        # Filter out triangles with any vertex in the extended BBox
         ETS = [t.v for t in self.triangles ]
         tris = [(a-4,b-4,c-4) for (a,b,c) in ETS if a > 3 and b > 3 and c > 3]
         return xs, ys, tris
