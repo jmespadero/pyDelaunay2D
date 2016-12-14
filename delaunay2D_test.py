@@ -45,7 +45,7 @@ if __name__ == '__main__':
     # DEBUG: Use matplotlib to create a Delaunay triangulation (plot in green)
     # DEBUG: It should be equal to our result in DT_tris (plot in blue)
     # DEBUG: If boundary is diferent, try to increase the value of your margin
-    # ax.triplot(matplotlib.tri.Triangulation(DT_x, DT_y), 'g-.')
+    ax.triplot(matplotlib.tri.Triangulation(DT_x, DT_y), 'g-.')
 
     # DEBUG: plot our extended triangulation (plot in red)
     # EDT_x, EDT_y, EDT_tris = DT.exportExtendedDT()

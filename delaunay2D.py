@@ -19,10 +19,6 @@ class Triangle:
         """Constructor from 3 indexes to vertex"""
         self.v = [a, b, c]
         self.neighbour = [None] * 3  # Adjacent triangles
-        # Avoid computing circumcenter here, so the triangle does
-        # not need to know its coordinates
-        self.center = None
-        self.radius = None
 
     def __repr__(self):
         """Dump indexes of the triangle as a text string"""
@@ -64,6 +60,7 @@ class Delaunay2D:
         T2 = Triangle(2, 1, 3)
         T1.neighbour[0] = T2
         T2.neighbour[0] = T1
+        # Store circumcenter and circumradius in the triangle
         T1.center, T1.radius = self.Circumcenter(T1)
         T2.center, T2.radius = self.Circumcenter(T2)
         self.triangles = [T1, T2]
@@ -151,8 +148,9 @@ class Delaunay2D:
         # Retriangle the hole left by bad_triangles
         new_triangles = []
         for edge in boundary:
-            # Create a new Triangle using point p and the edge
+            # Create a new Triangle using point p and this edge
             T = Triangle(idx, edge[0], edge[1])
+            # Store circumcenter and circumradius in the triangle
             T.center, T.radius = self.Circumcenter(T)
 
             # Set external triangle stored at edge[2] as neighbour of T
