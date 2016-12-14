@@ -94,12 +94,12 @@ class Delaunay2D:
         """Check if point p is inside of circumcircle around the triangle tri.
         This is a robust predicate, slower than compare distance to centers
         ref: https://www.cs.cmu.edu/~quake/robust.html
-        """        
-        m1 = np.asarray([self.coords[v] - self.coords[p] for v in tri.v]) 
-        m2 = np.sum(np.square(m1), axis=1).reshape((3,1))
-        m = np.hstack((m1,m2)) # The 3x3 matrix to check
-        return (np.linalg.det(m) <=0)
-        
+        """
+        m1 = np.asarray([self.coords[v] - self.coords[p] for v in tri.v])
+        m2 = np.sum(np.square(m1), axis=1).reshape((3, 1))
+        m = np.hstack((m1, m2))    # The 3x3 matrix to check
+        return (np.linalg.det(m) <= 0)
+
     def AddPoint(self, p):
         """Add a new point to the current triangulation.
         """
@@ -112,9 +112,9 @@ class Delaunay2D:
         bad_triangles = []
         for T in self.triangles:
             # Choose one of three methods: the clean, the fast or the robust...
-            # if np.linalg.norm(T.center - p) <= T.radius: # clean euclidean distance
+            # if np.linalg.norm(T.center - p) <= T.radius: # euclidean distance
             # if self.inCircle(T, idx): # Robust "point inside circle" check.
-            if np.sum(np.square(T.center - p)) <= T.radius: # fast squared distance
+            if np.sum(np.square(T.center - p)) <= T.radius:  # fast squared distance
                 bad_triangles.append(T)
 
         # Remove triangles too near of point p
@@ -187,8 +187,7 @@ class Delaunay2D:
 
         # Filter out triangles with any vertex in the extended BBox
         ETS = [t.v for t in self.triangles]
-        tris = [(a - 4, b - 4, c - 4)
-                for (a, b, c) in ETS if a > 3 and b > 3 and c > 3]
+        tris = [(a-4, b-4, c-4) for (a, b, c) in ETS if a>3 and b>3 and c>3]
         return xs, ys, tris
 
     def exportExtendedDT(self):
