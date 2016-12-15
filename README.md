@@ -19,8 +19,14 @@ try [scipy.spatial.Delaunay](https://docs.scipy.org/doc/scipy/reference/generate
 instead.
 
 ## So why?
-Mainly, to provide a didactic implementation of the algorithm. And because 
-sometimes it is not possible to import the complete scipy.spatial package 
+Mainly, to provide a didactic implementation of the algorithm. You can use:
+``` python 
+for t in DT.triangles:        
+    print(t, DT.triangles[t])
+```
+to show the current state of triangles and its neighbours.
+
+Also, because sometimes it is not possible to import the complete scipy.spatial package 
 (for example, when running a script inside of [blender](https://www.blender.org/) )
 
 ## References:
