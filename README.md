@@ -3,6 +3,8 @@ PyDelaunay2D
 
 A Simple Delaunay and Voronoi constructor in 2D. Written by [Jose M. Espadero](http://github.com/jmespadero)
 
+![](output-delaunay2D.png)
+
 Just pretend to be a simple and didactic implementation of the 
 [Bowyer-Watson algorithm](https://en.wikipedia.org/wiki/Bowyer-Watson_algorithm). 
 
