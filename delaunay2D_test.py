@@ -36,6 +36,7 @@ if __name__ == '__main__':
     """
     import matplotlib.pyplot as plt
     import matplotlib.tri
+    import matplotlib.collections
 
     # Create a plot with matplotlib.pyplot
     fig, ax = plt.subplots()
@@ -54,6 +55,11 @@ if __name__ == '__main__':
     #for c in DT.exportCircles():
     #    ax.add_artist(plt.Circle(c[0], c[1], color='b', fill=False, ls='dotted'))
 
+    # Plot voronoi edges
+    ve = DT.exportVoronoiEdges()
+    ax.add_collection(matplotlib.collections.LineCollection(ve))
+
+    
     # DEBUG: plot our extended triangulation (plot in red)
     # EDT_x, EDT_y, EDT_tris = DT.exportExtendedDT()
     # print("Extended DT_tris:", len(EDT_tris), "triangles")

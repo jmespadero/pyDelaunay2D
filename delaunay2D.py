@@ -194,7 +194,7 @@ class Delaunay2D:
     def exportCircles(self):
         """Export the circumcircles
         """
-        # Compute circumcircles if not done before
+        # Remember to compute circumcircles if not done before
         # for t in self.triangles:
         #     self.circles[t] = self.Circumcenter(t)
         
@@ -202,3 +202,31 @@ class Delaunay2D:
         # Do sqrt of radius before of return
         return [(self.circles[(a,b,c)][0], sqrt(self.circles[(a,b,c)][1]))
                 for (a, b, c) in self.triangles if a > 3 and b > 3 and c > 3]
+
+    def exportVoronoiEdges(self):
+        """Export the edges of Voronoi diagram. May contain duplicates
+        """
+        # Remember to compute circumcircles if not done before
+        # for t in self.triangles:
+        #     self.circles[t] = self.Circumcenter(t)        
+        vor_edges = []
+        for (a, b, c) in self.triangles:
+            if a > 3 and b > 3 and c > 3 :
+                for neigh in self.triangles[(a,b,c)]:
+                    vor_edges.append( [self.circles[(a,b,c)][0], self.circles[neigh][0]] )
+        return vor_edges
+
+    def exportVoronoiCoordEdges(self):
+        """Export the edges of Voronoi diagram. May contain duplicates
+        """
+        # Remember to compute circumcircles if not done before
+        # for t in self.triangles:
+        #     self.circles[t] = self.Circumcenter(t)        
+        ets = [t for t in self.triangles]        
+        vor_coors = [self.circles[t][0] for t in ets]
+        vor_edges = []
+        for tidx, (a, b, c) in enumerate(ets):
+            if a > 3 and b > 3 and c > 3 :
+                for neigh in self.triangles[(a,b,c)] :
+                    vor_edges.append( (tidx, ets.index(neigh)) )
+        return vor_coors, vor_edges
