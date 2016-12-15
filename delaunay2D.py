@@ -10,7 +10,7 @@ Robust checks disabled by default. May not work in degenerate set of points.
 """
 
 import numpy as np
-
+from math import sqrt
 
 class Delaunay2D:
     """
@@ -190,3 +190,13 @@ class Delaunay2D:
         ys = [p[1] for p in self.coords]
         tris = [t for t in self.triangles]
         return xs, ys, tris
+        
+    def exportCircles(self):
+        """Export the circumcircles
+        """
+        # for t in self.triangles:
+        #     self.circles[t] = self.Circumcenter(t)
+        # Filter out triangles with any vertex in the extended BBox
+        # Do sqrt of radius before of return
+        return [(self.circles[(a,b,c)][0], sqrt(self.circles[(a,b,c)][1]))
+                for (a, b, c) in self.triangles if a > 3 and b > 3 and c > 3]

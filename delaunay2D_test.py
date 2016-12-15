@@ -48,7 +48,11 @@ if __name__ == '__main__':
     # DEBUG: Use matplotlib to create a Delaunay triangulation (plot in green)
     # DEBUG: It should be equal to our result in DT_tris (plot in blue)
     # DEBUG: If boundary is diferent, try to increase the value of your margin
-    ax.triplot(matplotlib.tri.Triangulation(DT_x, DT_y), 'g-.')
+    ax.triplot(matplotlib.tri.Triangulation(DT_x, DT_y), 'g--')
+
+    # Plot our circumcircles (circles in blue)
+    #for c in DT.exportCircles():
+    #    ax.add_artist(plt.Circle(c[0], c[1], color='b', fill=False, ls='dotted'))
 
     # DEBUG: plot our extended triangulation (plot in red)
     # EDT_x, EDT_y, EDT_tris = DT.exportExtendedDT()
