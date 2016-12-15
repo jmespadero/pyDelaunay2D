@@ -194,8 +194,10 @@ class Delaunay2D:
     def exportCircles(self):
         """Export the circumcircles
         """
+        # Compute circumcircles if not done before
         # for t in self.triangles:
         #     self.circles[t] = self.Circumcenter(t)
+        
         # Filter out triangles with any vertex in the extended BBox
         # Do sqrt of radius before of return
         return [(self.circles[(a,b,c)][0], sqrt(self.circles[(a,b,c)][1]))
