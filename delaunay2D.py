@@ -6,7 +6,7 @@ Written by Jose M. Espadero ( http://github.com/jmespadero/pyDelaunay2D )
 Based on code from Ayron Catteau. Published at http://github.com/ayron/delaunay
 
 Just pretend to be simple and didactic. The only requisite is numpy.
-Robustness checks disabled by default. May not work in degenerate set of points.
+Robust checks disabled by default. May not work in degenerate set of points.
 """
 
 import numpy as np
@@ -58,19 +58,22 @@ class Delaunay2D:
             self.AddPoint(s)
 
     def Circumcenter(self, tri):
-        """Compute Circumcenter and circumradius of a triangle.
+        """Compute Circumcenter and circumradius of a triangle in 2D.
         Uses an extension of the method described here:
         http://www.ics.uci.edu/~eppstein/junkyard/circumcenter.html
         """
         pts = np.asarray([self.coords[v] for v in tri])
-        A = np.bmat([[2 * np.dot(pts, pts.T), np.ones((3, 1))],
-                     [np.ones((1, 3)),  np.zeros((1, 1))]])
+        pts2 = np.dot(pts, pts.T)
+        A = np.bmat([[2 * pts2, [[1],
+                                 [1],
+                                 [1]]],
+                      [[[1, 1, 1, 0]]]])
 
-        b = np.hstack((np.sum(pts * pts, axis=1), np.ones((1))))
+        b = np.hstack((np.sum(pts * pts, axis=1), [1]))
         x = np.linalg.solve(A, b)
         bary_coords = x[:-1]
-
         center = np.dot(bary_coords, pts)
+
         # radius = np.linalg.norm(pts[0] - center) # euclidean distance
         radius = np.sum(np.square(pts[0] - center))  # squared distance
         return (center, radius)
@@ -84,7 +87,7 @@ class Delaunay2D:
     def inCircleRobust(self, tri, p):
         """Check if point p is inside of circumcircle around the triangle tri.
         This is a robust predicate, slower than compare distance to centers
-        ref: https://www.cs.cmu.edu/~quake/robust.html
+        ref: http://www.cs.cmu.edu/~quake/robust.html
         """
         m1 = np.asarray([self.coords[v] - p for v in tri])
         m2 = np.sum(np.square(m1), axis=1).reshape((3, 1))
@@ -181,7 +184,7 @@ class Delaunay2D:
         return xs, ys, tris
 
     def exportExtendedDT(self):
-        """Export the Extended Delaunay Triangulation (include the frame vertex).
+        """Export the Extended Delaunay Triangulation (with the frame vertex).
         """
         xs = [p[0] for p in self.coords]
         ys = [p[1] for p in self.coords]
