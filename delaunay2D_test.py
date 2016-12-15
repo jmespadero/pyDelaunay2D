@@ -27,6 +27,9 @@ if __name__ == '__main__':
     DT_x, DT_y, DT_tris = DT.exportDT()
     print("DT_tris:", len(DT_tris), "triangles")
     print("DT_tris:\n", DT_tris)
+    # print triangles with neighbours
+    # for t in DT.triangles:        
+    #     print(t, DT.triangles[t])
 
     """
     How to plot triangular grids. (just for debug)

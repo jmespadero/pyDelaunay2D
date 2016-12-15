@@ -6,23 +6,10 @@ Written by Jose M. Espadero ( http://github.com/jmespadero/pyDelaunay2D )
 Based on code from Ayron Catteau. Published at http://github.com/ayron/delaunay
 
 Just pretend to be simple and didactic. The only requisite is numpy.
-Lack of robustness checks. Do not expect to work on degenerate set of points.
+Robustness checks disabled by default. May not work in degenerate set of points.
 """
 
 import numpy as np
-
-
-class Triangle:
-    """Simple class to store an indexed triangle with neighbour information."""
-
-    def __init__(self, a, b, c):
-        """Constructor from 3 indexes to vertex"""
-        self.v = [a, b, c]
-        self.neighbour = [None] * 3  # Adjacent triangles
-
-    def __repr__(self):
-        """Dump indexes of the triangle as a text string"""
-        return 'tri< ' + str(self.v) + ' >'
 
 
 class Delaunay2D:
@@ -56,14 +43,15 @@ class Delaunay2D:
         self.coords = [smin, np.array((smax[0], smin[1])),
                        smax, np.array((smin[0], smax[1]))]
 
-        T1 = Triangle(0, 3, 1)
-        T2 = Triangle(2, 1, 3)
-        T1.neighbour[0] = T2
-        T2.neighbour[0] = T1
-        # Store circumcenter and circumradius in the triangle
-        T1.center, T1.radius = self.Circumcenter(T1)
-        T2.center, T2.radius = self.Circumcenter(T2)
-        self.triangles = [T1, T2]
+        # Create two triangles for the frame
+        T1 = (0, 3, 1)
+        T2 = (2, 1, 3)
+        self.triangles = {T1: [T2, None, None], T2: [T1, None, None]}
+
+        # Compute circumcenters and circumradius for each triangle
+        self.circles = {}
+        for t in self.triangles:
+            self.circles[t] = self.Circumcenter(t)
 
         # Insert all seeds one by one
         for s in seeds:
@@ -74,7 +62,7 @@ class Delaunay2D:
         Uses an extension of the method described here:
         http://www.ics.uci.edu/~eppstein/junkyard/circumcenter.html
         """
-        pts = np.asarray([self.coords[v] for v in tri.v])
+        pts = np.asarray([self.coords[v] for v in tri])
         A = np.bmat([[2 * np.dot(pts, pts.T), np.ones((3, 1))],
                      [np.ones((1, 3)),  np.zeros((1, 1))]])
 
@@ -90,14 +78,15 @@ class Delaunay2D:
     def inCircleFast(self, tri, p):
         """Check if point p is inside of precomputed circumcircle of tri.
         """
-        return np.sum(np.square(tri.center - p)) <= tri.radius
+        circle = self.circles[tri]
+        return np.sum(np.square(circle[0] - p)) <= circle[1]
 
     def inCircleRobust(self, tri, p):
         """Check if point p is inside of circumcircle around the triangle tri.
         This is a robust predicate, slower than compare distance to centers
         ref: https://www.cs.cmu.edu/~quake/robust.html
         """
-        m1 = np.asarray([self.coords[v] - p for v in tri.v])
+        m1 = np.asarray([self.coords[v] - p for v in tri])
         m2 = np.sum(np.square(m1), axis=1).reshape((3, 1))
         m = np.hstack((m1, m2))    # The 3x3 matrix to check
         return (np.linalg.det(m) <= 0)
@@ -117,24 +106,21 @@ class Delaunay2D:
             if self.inCircleFast(T, p):
                 bad_triangles.append(T)
 
-        # Remove triangles too near of point p
-        for T in bad_triangles:
-            self.triangles.remove(T)
-
         # Find the CCW boundary (star shape) of the bad triangles,
         # expressed as a list of edges (point pairs) and the opposite
         # triangle to each edge.
         boundary = []
-        # Choose a random triangle and edge
+        # Choose a "random" triangle and edge
         T = bad_triangles[0]
         edge = 0
+        # get the opposite triangle of this edge
         while True:
-            # Check if edge is on the boundary...
+            # Check if edge of triangle T is on the boundary...
             # if opposite triangle of this edge is external to the list
-            if not T.neighbour[edge] in bad_triangles:
+            tri_op = self.triangles[T][edge]
+            if tri_op not in bad_triangles:
                 # Insert edge and external triangle into boundary list
-                boundary.append(
-                    (T.v[(edge+1) % 3], T.v[(edge-1) % 3], T.neighbour[edge]))
+                boundary.append((T[(edge+1) % 3], T[(edge-1) % 3], tri_op))
 
                 # Move to next CCW edge in this triangle
                 edge = (edge + 1) % 3
@@ -143,41 +129,44 @@ class Delaunay2D:
                 if boundary[0][0] == boundary[-1][1]:
                     break
             else:
-                # Move to next CCW edge in neighbour triangle
-                last = T
-                T = T.neighbour[edge]
-                edge = (T.neighbour.index(last) + 1) % 3
+                # Move to next CCW edge in opposite triangle
+                edge = (self.triangles[tri_op].index(T) + 1) % 3
+                T = tri_op
+
+        # Remove triangles too near of point p of our solution
+        for T in bad_triangles:
+            del self.triangles[T]
+            del self.circles[T]
 
         # Retriangle the hole left by bad_triangles
         new_triangles = []
-        for edge in boundary:
-            # Create a new Triangle using point p and this edge
-            T = Triangle(idx, edge[0], edge[1])
-            # Store circumcenter and circumradius in the triangle
-            T.center, T.radius = self.Circumcenter(T)
+        for (e0, e1, tri_op) in boundary:
+            # Create a new triangle using point p and edge extremes
+            T = (idx, e0, e1)
 
-            # Set external triangle stored at edge[2] as neighbour of T
-            T.neighbour[0] = edge[2]
+            # Store circumcenter and circumradius of the triangle
+            self.circles[T] = self.Circumcenter(T)
 
-            # Set T as neighbour of triangle stored at edge[2]
-            if T.neighbour[0]:
-                # search the reversed edge in T.neighbour[0].v
-                tmp_v = T.neighbour[0].v
-                for i in range(3):
-                    if edge[1] == tmp_v[i] and edge[0] == tmp_v[(i + 1) % 3]:
-                        T.neighbour[0].neighbour[(i - 1) % 3] = T
+            # Set opposite triangle of the edge as neighbour of T
+            self.triangles[T] = [tri_op, None, None]
+
+            # Try to set T as neighbour of the opposite triangle
+            if tri_op:
+                # search the neighbour of tri_op that use edge (e1, e0)
+                for i, neigh in enumerate(self.triangles[tri_op]):
+                    if neigh:
+                        if e1 in neigh and e0 in neigh:
+                            # change link to use our new triangle
+                            self.triangles[tri_op][i] = T
 
             # Add triangle to a temporal list
             new_triangles.append(T)
 
-        # Link the new triangles
+        # Link the new triangles each another
         N = len(new_triangles)
         for i, T in enumerate(new_triangles):
-            T.neighbour[2] = new_triangles[(i - 1) % N]   # back
-            T.neighbour[1] = new_triangles[(i + 1) % N]   # forward
-
-        # Add triangles to our triangulation
-        self.triangles.extend(new_triangles)
+            self.triangles[T][1] = new_triangles[(i+1) % N]   # next
+            self.triangles[T][2] = new_triangles[(i-1) % N]   # previous
 
     def exportDT(self):
         """Export the current Delaunay Triangulation.
@@ -187,8 +176,8 @@ class Delaunay2D:
         ys = [p[1] for p in self.coords[4:]]
 
         # Filter out triangles with any vertex in the extended BBox
-        ETS = [t.v for t in self.triangles]
-        tris = [(a-4, b-4, c-4) for (a, b, c) in ETS if a>3 and b>3 and c>3]
+        tris = [(a-4, b-4, c-4)
+                for (a, b, c) in self.triangles if a > 3 and b > 3 and c > 3]
         return xs, ys, tris
 
     def exportExtendedDT(self):
@@ -196,5 +185,5 @@ class Delaunay2D:
         """
         xs = [p[0] for p in self.coords]
         ys = [p[1] for p in self.coords]
-        tris = [t.v for t in self.triangles]
+        tris = [t for t in self.triangles]
         return xs, ys, tris
