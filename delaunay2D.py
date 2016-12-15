@@ -204,7 +204,8 @@ class Delaunay2D:
                 for (a, b, c) in self.triangles if a > 3 and b > 3 and c > 3]
 
     def exportVoronoiEdges(self):
-        """Export the edges of Voronoi diagram. May contain duplicates
+        """Export the edges of Voronoi diagram as unstructured data.
+           May contain duplicates edges.
         """
         # Remember to compute circumcircles if not done before
         # for t in self.triangles:
@@ -217,7 +218,8 @@ class Delaunay2D:
         return vor_edges
 
     def exportVoronoiCoordEdges(self):
-        """Export the edges of Voronoi diagram. May contain duplicates
+        """Export the edges of Voronoi diagram as indexed data.
+           May contain duplicates
         """
         # Remember to compute circumcircles if not done before
         # for t in self.triangles:
