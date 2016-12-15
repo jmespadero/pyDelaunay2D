@@ -1,14 +1,14 @@
 PyDelaunay2D
 ==============
 
-A Simple structured Delaunay 2D triangulation package.  
+A Simple Delaunay and Voronoi constructor in 2D
 Written by Jose M. Espadero ( http://github.com/jmespadero/pyDelaunay2D )
 
 Just pretend to be a simple and didactic implementation of the 
 [Bowyer-Watson algorithm](https://en.wikipedia.org/wiki/Bowyer-Watson_algorithm). 
 
 It is written in pure python + [numpy](http://www.numpy.org/) (tested with 
-python2.6 and python3). A test example is provided showing how to call and 
+python2.7 and python3). A test example is provided showing how to call and 
 plot the results using matplotlib.
 
 It support the [inCircle2D robust predicate](https://www.cs.cmu.edu/~quake/robust.html)
