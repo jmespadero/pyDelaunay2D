@@ -12,6 +12,7 @@ Robust checks disabled by default. May not work in degenerate set of points.
 import numpy as np
 from math import sqrt
 
+
 class Delaunay2D:
     """
     Class to compute a Delaunay triangulation in 2D
@@ -190,17 +191,17 @@ class Delaunay2D:
         ys = [p[1] for p in self.coords]
         tris = [t for t in self.triangles]
         return xs, ys, tris
-        
+
     def exportCircles(self):
         """Export the circumcircles
         """
         # Remember to compute circumcircles if not done before
         # for t in self.triangles:
         #     self.circles[t] = self.Circumcenter(t)
-        
+
         # Filter out triangles with any vertex in the extended BBox
         # Do sqrt of radius before of return
-        return [(self.circles[(a,b,c)][0], sqrt(self.circles[(a,b,c)][1]))
+        return [(self.circles[(a, b, c)][0], sqrt(self.circles[(a, b, c)][1]))
                 for (a, b, c) in self.triangles if a > 3 and b > 3 and c > 3]
 
     def exportVoronoiEdges(self):
@@ -209,12 +210,13 @@ class Delaunay2D:
         """
         # Remember to compute circumcircles if not done before
         # for t in self.triangles:
-        #     self.circles[t] = self.Circumcenter(t)        
+        #     self.circles[t] = self.Circumcenter(t)
         vor_edges = []
         for (a, b, c) in self.triangles:
-            if a > 3 and b > 3 and c > 3 :
-                for neigh in self.triangles[(a,b,c)]:
-                    vor_edges.append( [self.circles[(a,b,c)][0], self.circles[neigh][0]] )
+            if a > 3 and b > 3 and c > 3:
+                t = (a, b, c)
+                for n in self.triangles[t]:
+                    vor_edges.append([self.circles[t][0], self.circles[n][0]])
         return vor_edges
 
     def exportVoronoiCoordEdges(self):
@@ -223,12 +225,12 @@ class Delaunay2D:
         """
         # Remember to compute circumcircles if not done before
         # for t in self.triangles:
-        #     self.circles[t] = self.Circumcenter(t)        
-        ets = [t for t in self.triangles]        
+        #     self.circles[t] = self.Circumcenter(t)
+        ets = [t for t in self.triangles]
         vor_coors = [self.circles[t][0] for t in ets]
         vor_edges = []
         for tidx, (a, b, c) in enumerate(ets):
-            if a > 3 and b > 3 and c > 3 :
-                for neigh in self.triangles[(a,b,c)] :
-                    vor_edges.append( (tidx, ets.index(neigh)) )
+            if a > 3 and b > 3 and c > 3:
+                for neigh in self.triangles[(a, b, c)]:
+                    vor_edges.append((tidx, ets.index(neigh)))
         return vor_coors, vor_edges
