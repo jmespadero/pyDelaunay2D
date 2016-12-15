@@ -58,11 +58,14 @@ if __name__ == '__main__':
     # Plot voronoi edges
     ve = DT.exportVoronoiEdges()
     ax.add_collection(matplotlib.collections.LineCollection(ve))
-
     
     # DEBUG: plot our extended triangulation (plot in red)
     # EDT_x, EDT_y, EDT_tris = DT.exportExtendedDT()
     # print("Extended DT_tris:", len(EDT_tris), "triangles")
     # ax.triplot(matplotlib.tri.Triangulation(EDT_x, EDT_y, EDT_tris), 'ro-.')
+
+    # Dump plot to file
+    # plt.savefig('output-delaunay2D.png', dpi=96)
+    # plt.savefig('output-delaunay2D.svg', dpi=96)
 
     plt.show()
