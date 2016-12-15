@@ -87,12 +87,17 @@ class Delaunay2D:
         radius = np.sum(np.square(pts[0] - center))  # squared distance
         return (center, radius)
 
-    def inCircle(self, tri, p):
+    def inCircleFast(self, tri, p):
+        """Check if point p is inside of precomputed circumcircle of tri.
+        """
+        return np.sum(np.square(tri.center - p)) <= tri.radius
+
+    def inCircleRobust(self, tri, p):
         """Check if point p is inside of circumcircle around the triangle tri.
         This is a robust predicate, slower than compare distance to centers
         ref: https://www.cs.cmu.edu/~quake/robust.html
         """
-        m1 = np.asarray([self.coords[v] - self.coords[p] for v in tri.v])
+        m1 = np.asarray([self.coords[v] - p for v in tri.v])
         m2 = np.sum(np.square(m1), axis=1).reshape((3, 1))
         m = np.hstack((m1, m2))    # The 3x3 matrix to check
         return (np.linalg.det(m) <= 0)
@@ -108,10 +113,8 @@ class Delaunay2D:
         # Search the triangle(s) whose circumcircle contains p
         bad_triangles = []
         for T in self.triangles:
-            # Choose one of three methods: the clean, the fast or the robust...
-            # if np.linalg.norm(T.center - p) <= T.radius: # euclidean distance
-            # if self.inCircle(T, idx): # Robust "point inside circle" check.
-            if np.sum(np.square(T.center - p)) <= T.radius:  # fast squared distance
+            # Choose one method: inCircleRobust(T, p) or inCircleFast(T, p)
+            if self.inCircleFast(T, p):
                 bad_triangles.append(T)
 
         # Remove triangles too near of point p
