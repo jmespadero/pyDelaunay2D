@@ -1,7 +1,7 @@
 PyDelaunay2D
 ==============
 
-A Simple Delaunay and Voronoi constructor in 2D. Written by [Jose M. Espadero](http://github.com/jmespadero)
+A Simple Delaunay and Voronoi constructor in 2D. Written by [Jose M. Espadero](https://github.com/jmespadero/pyDelaunay2D)
 
 ![](output-delaunay2D.png)
 
@@ -47,7 +47,7 @@ package (for example, when running a script inside of [blender](https://www.blen
 ## Is it considered well-optimized?
 
 No. The code has been written to be clear, not optimized. There is a section 
-that performs specially bad. 
+that performs specially bad: 
 
 ``` python
     # Search the triangle(s) whose circumcircle contains p 
@@ -58,10 +58,11 @@ that performs specially bad.
 
 There, we should avoid iterating the complete list of triangles. Best way is to 
 use a structure that allows a spatial search (as a [QuadTree](https://en.wikipedia.org/wiki/Quadtree)). 
-Then, continue the search using the neighbours of the initial search.
+Then, continue the search over the neighbours of the initial search.
 
-Again, just pretend to keep the code simple and didactic. And import the minimal 
-number of libraries.
+Despite that, it will compute DT of less than 1000 points in a reasonable time.
+
+Again, just pretend to keep the code simple, didactic and with minimal dependencies.
 
 ## References:
 * https://en.wikipedia.org/wiki/Bowyer-Watson_algorithm
