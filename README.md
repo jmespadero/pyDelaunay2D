@@ -49,17 +49,19 @@ package (for example, when running a script inside of [blender](https://www.blen
 No. The code has been written to be clear, not optimized. There is a section 
 that performs specially bad. 
 
-``` python 
+``` python
+    # Search the triangle(s) whose circumcircle contains p 
     for T in self.triangles:
-        if self.inCircleFast(T, p):
+        if self.inCircle(T, p):
             bad_triangles.append(T)
 ```
 
-There, we should avoid iterate the complete list of triangles. Best way is to 
-use a structure that allows a search using spatial info (as a [QuadTree](https://en.wikipedia.org/wiki/Quadtree)). 
+There, we should avoid iterating the complete list of triangles. Best way is to 
+use a structure that allows a spatial search (as a [QuadTree](https://en.wikipedia.org/wiki/Quadtree)). 
 Then, continue the search using the neighbours of the initial search.
 
-Again, just pretend to keep the code simple and didactic.
+Again, just pretend to keep the code simple and didactic. And import the minimal 
+number of libraries.
 
 ## References:
 * https://en.wikipedia.org/wiki/Bowyer-Watson_algorithm
