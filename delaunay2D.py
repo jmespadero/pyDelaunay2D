@@ -20,44 +20,32 @@ class Delaunay2D:
     ref: http://www.geom.uiuc.edu/~samuelp/del_project.html
     """
 
-    def __init__(self, seeds, margin=None):
-        """Create a new set of triangles from a 2D vertex array
-        seeds  -- Array of 2D coordinates for the vertex
-        margin -- Optional parameter to set the distance of extended BBox
+    def __init__(self, center=(0,0), radius=9999):
+        """ Init and create a new frame to contain the triangulation
+        center -- Optional position for the center of the frame. Default (0,0)
+        radius -- Optional distance from corners to the center.
         """
+        center = np.asarray(center)
+        # Create coordinates for the corners of the frame
+        self.coords = [center+radius*np.array((-1,-1)),
+                       center+radius*np.array(( 1,-1)),
+                       center+radius*np.array(( 1, 1)),
+                       center+radius*np.array((-1, 1))]
 
-        seeds = np.asarray(seeds)
-
-        # Compute BBox
-        smin = np.amin(seeds, axis=0)
-        smax = np.amax(seeds, axis=0)
-        # If no margin is given, compute one based on the diagonal
-        if not margin:
-            margin = 50 * np.linalg.norm(smax - smin)
-
-        # Extend the BBox coordinates by the margin. Store it.
-        smin -= margin
-        smax += margin
-        self.margin = margin
-
-        # Create a two triangles 'frame' big enough to contains all seeds
-        self.coords = [smin, np.array((smax[0], smin[1])),
-                       smax, np.array((smin[0], smax[1]))]
-
-        # Create two triangles for the frame
+        # Create two dicts to store triangle neighbours and circumcircles.
+        self.triangles = {}
+        self.circles = {}
+        
+        # Create two CCW triangles for the frame
         T1 = (0, 3, 1)
         T2 = (2, 1, 3)
-        self.triangles = {T1: [T2, None, None], T2: [T1, None, None]}
+        self.triangles[T1] = [T2, None, None]
+        self.triangles[T2] = [T1, None, None]
 
         # Compute circumcenters and circumradius for each triangle
-        self.circles = {}
         for t in self.triangles:
             self.circles[t] = self.Circumcenter(t)
-
-        # Insert all seeds one by one
-        for s in seeds:
-            self.AddPoint(s)
-
+                
     def Circumcenter(self, tri):
         """Compute Circumcenter and circumradius of a triangle in 2D.
         Uses an extension of the method described here:
@@ -172,8 +160,27 @@ class Delaunay2D:
             self.triangles[T][1] = new_triangles[(i+1) % N]   # next
             self.triangles[T][2] = new_triangles[(i-1) % N]   # previous
 
+    def exportTriangles(self):
+        """Export the current list of Delaunay triangles
+        """
+        # Filter out triangles with any vertex in the extended BBox
+        return [(a-4, b-4, c-4)
+                for (a, b, c) in self.triangles if a > 3 and b > 3 and c > 3]
+
+    def exportCircles(self):
+        """Export the circumcircles as a list of (center, radius)
+        """
+        # Remember to compute circumcircles if not done before
+        # for t in self.triangles:
+        #     self.circles[t] = self.Circumcenter(t)
+
+        # Filter out triangles with any vertex in the extended BBox
+        # Do sqrt of radius before of return
+        return [(self.circles[(a, b, c)][0], sqrt(self.circles[(a, b, c)][1]))
+                for (a, b, c) in self.triangles if a > 3 and b > 3 and c > 3]
+
     def exportDT(self):
-        """Export the current Delaunay Triangulation.
+        """Export the current Delaunay coordinates and triangles.
         """
         # Filter out coordinates in the extended BBox
         xs = [p[0] for p in self.coords[4:]]
@@ -192,18 +199,6 @@ class Delaunay2D:
         tris = [t for t in self.triangles]
         return xs, ys, tris
 
-    def exportCircles(self):
-        """Export the circumcircles
-        """
-        # Remember to compute circumcircles if not done before
-        # for t in self.triangles:
-        #     self.circles[t] = self.Circumcenter(t)
-
-        # Filter out triangles with any vertex in the extended BBox
-        # Do sqrt of radius before of return
-        return [(self.circles[(a, b, c)][0], sqrt(self.circles[(a, b, c)][1]))
-                for (a, b, c) in self.triangles if a > 3 and b > 3 and c > 3]
-
     def exportVoronoiEdges(self):
         """Export the edges of Voronoi diagram as unstructured data.
            May contain duplicates edges.
@@ -220,7 +215,7 @@ class Delaunay2D:
         return vor_edges
 
     def exportVoronoiCoordEdges(self):
-        """Export the edges of Voronoi diagram as indexed data.
+        """Export coordinates and edges of Voronoi diagram as indexed data.
            May contain duplicates
         """
         # Remember to compute circumcircles if not done before

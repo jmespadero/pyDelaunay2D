@@ -24,9 +24,22 @@ instead.
 
 ## So why?
 Mainly, to provide a didactic implementation of the algorithm. You can use:
+
 ``` python 
-for t in DT.triangles:        
-    print(t, DT.triangles[t])
+import numpy as np
+from delaunay2D import Delaunay2D
+
+# Create a random set of points
+seeds = np.random.random((24, 2))
+
+# Create delaunay Triangulation
+dt = Delaunay2D()
+for s in seeds:
+    dt.AddPoint(s)
+
+# Dump triangles and neighborhood
+for t in dt.triangles:        
+    print(t, dt.triangles[t])
 ```
 to show the current state of triangles and its neighbours.
 
