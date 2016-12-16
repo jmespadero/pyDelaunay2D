@@ -16,26 +16,26 @@ from math import sqrt
 class Delaunay2D:
     """
     Class to compute a Delaunay triangulation in 2D
-    ref: http://en.wikipedia.org/wiki/Bowyer%E2%80%93Watson_algorithm
+    ref: http://en.wikipedia.org/wiki/Bowyer-Watson_algorithm
     ref: http://www.geom.uiuc.edu/~samuelp/del_project.html
     """
 
-    def __init__(self, center=(0,0), radius=9999):
+    def __init__(self, center=(0, 0), radius=9999):
         """ Init and create a new frame to contain the triangulation
         center -- Optional position for the center of the frame. Default (0,0)
         radius -- Optional distance from corners to the center.
         """
         center = np.asarray(center)
         # Create coordinates for the corners of the frame
-        self.coords = [center+radius*np.array((-1,-1)),
-                       center+radius*np.array(( 1,-1)),
-                       center+radius*np.array(( 1, 1)),
-                       center+radius*np.array((-1, 1))]
+        self.coords = [center+radius*np.array((-1, -1)),
+                       center+radius*np.array((+1, -1)),
+                       center+radius*np.array((+1, +1)),
+                       center+radius*np.array((-1, +1))]
 
         # Create two dicts to store triangle neighbours and circumcircles.
         self.triangles = {}
         self.circles = {}
-        
+
         # Create two CCW triangles for the frame
         T1 = (0, 3, 1)
         T2 = (2, 1, 3)
@@ -45,7 +45,7 @@ class Delaunay2D:
         # Compute circumcenters and circumradius for each triangle
         for t in self.triangles:
             self.circles[t] = self.Circumcenter(t)
-                
+
     def Circumcenter(self, tri):
         """Compute Circumcenter and circumradius of a triangle in 2D.
         Uses an extension of the method described here:
@@ -70,8 +70,8 @@ class Delaunay2D:
     def inCircleFast(self, tri, p):
         """Check if point p is inside of precomputed circumcircle of tri.
         """
-        circle = self.circles[tri]
-        return np.sum(np.square(circle[0] - p)) <= circle[1]
+        center, radius = self.circles[tri]
+        return np.sum(np.square(center - p)) <= radius
 
     def inCircleRobust(self, tri, p):
         """Check if point p is inside of circumcircle around the triangle tri.
@@ -81,10 +81,10 @@ class Delaunay2D:
         m1 = np.asarray([self.coords[v] - p for v in tri])
         m2 = np.sum(np.square(m1), axis=1).reshape((3, 1))
         m = np.hstack((m1, m2))    # The 3x3 matrix to check
-        return (np.linalg.det(m) <= 0)
+        return np.linalg.det(m) <= 0
 
     def AddPoint(self, p):
-        """Add a new point to the current triangulation.
+        """Add a new point to the current DT, and refine it using Bowyer-Watson.
         """
         p = np.asarray(p)
         idx = len(self.coords)
