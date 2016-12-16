@@ -46,8 +46,8 @@ package (for example, when running a script inside of [blender](https://www.blen
 
 ## Is it considered well-optimized?
 
-No. The code has been written to be clear, not optimized. There is a section 
-that performs specially bad: 
+No. The code has been written to be clear, not optimized. There is a section in 
+```AddPoint()``` that performs specially bad: 
 
 ``` python
     # Search the triangle(s) whose circumcircle contains p 
