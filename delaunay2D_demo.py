@@ -23,7 +23,7 @@ if __name__ == '__main__':
     """
     # It is recommended to build a frame taylored for our data
     # dt = D.Delaunay2D() # Default frame
-    dt = D.Delaunay2D(center=np.mean(seeds, axis=0), radius = 50* radius)
+    dt = Delaunay2D(center=np.mean(seeds, axis=0), radius = 50* radius)
 
     # Insert all seeds one by one
     for s in seeds:
@@ -57,13 +57,13 @@ if __name__ == '__main__':
     # DEBUG: If boundary is diferent, try to increase the value of your margin
     # ax.triplot(matplotlib.tri.Triangulation(dt_x, dt_y), 'g--')
 
-    # Plot our circumcircles (circles in blue)
-    #for c in dt.exportCircles():
-    #    ax.add_artist(plt.Circle(c[0], c[1], color='b', fill=False, ls='dotted'))
+    # Plot the circumcircles (circles in black)
+    # for c in dt.exportCircles():
+    #   ax.add_artist(plt.Circle(c[0], c[1], color='k', fill=False, ls='dotted'))
 
-    # Plot voronoi diagram edges
+    # Plot voronoi diagram edges (in red)
     ve = dt.exportVoronoiEdges()
-    ax.add_collection(matplotlib.collections.LineCollection(ve))
+    ax.add_collection(matplotlib.collections.LineCollection(ve, colors='r'))
     
     # DEBUG: plot the extended triangulation (plot in red)
     # edt_x, edt_y, edt_tris = dt.exportExtendedDT()
