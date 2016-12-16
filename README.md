@@ -8,7 +8,7 @@ A Simple Delaunay and Voronoi constructor in 2D. Written by [Jose M. Espadero](h
 Just pretend to be a simple and didactic implementation of the 
 [Bowyer-Watson algorithm](https://en.wikipedia.org/wiki/Bowyer-Watson_algorithm)
 to compute the [Delaunay triangulation](https://en.wikipedia.org/wiki/Delaunay_triangulation)
-and the [Voronoi_diagram](https://en.wikipedia.org/wiki/Voronoi_diagram) of a set o 2D points.
+and the [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram) of a set o 2D points.
 
 It is written in pure python + [numpy](http://www.numpy.org/) (tested with 
 python2.7 and python3). A test example is provided showing how to call and 
