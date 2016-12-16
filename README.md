@@ -10,7 +10,6 @@ Just pretend to be a simple and didactic implementation of the
 to compute the [Delaunay triangulation](https://en.wikipedia.org/wiki/Delaunay_triangulation)
 and the [Voronoi_diagram](https://en.wikipedia.org/wiki/Voronoi_diagram) of a set o 2D points.
 
-
 It is written in pure python + [numpy](http://www.numpy.org/) (tested with 
 python2.7 and python3). A test example is provided showing how to call and 
 plot the results using matplotlib.
@@ -30,21 +29,37 @@ import numpy as np
 from delaunay2D import Delaunay2D
 
 # Create a random set of points
-seeds = np.random.random((24, 2))
+seeds = np.random.random((10, 2))
 
 # Create delaunay Triangulation
 dt = Delaunay2D()
 for s in seeds:
     dt.AddPoint(s)
 
-# Dump triangles and neighborhood
-for t in dt.triangles:        
-    print(t, dt.triangles[t])
+# Dump triangles 
+print (dt.exportTriangles())
 ```
-to show the current state of triangles and its neighbours.
+as a minimal example of build a triangulation and dump the triangles.
 
-Also, because sometimes it is not possible to import the complete scipy.spatial package 
-(for example, when running a script inside of [blender](https://www.blender.org/) )
+Also, because sometimes it is not possible to import the complete scipy.spatial
+package (for example, when running a script inside of [blender](https://www.blender.org/) )
+
+## Is it considered well-optimized?
+
+No. The code has been written to be clear, not optimized. There is a section 
+that performs specially bad. 
+
+``` python 
+    for T in self.triangles:
+        if self.inCircleFast(T, p):
+            bad_triangles.append(T)
+```
+
+There, we should avoid iterate the complete list of triangles. Best way is to 
+use a structure that allows a search using spatial info (as a [QuadTree](https://en.wikipedia.org/wiki/Quadtree)). 
+Then, continue the search using the neighbours of the initial search.
+
+Again, just pretend to keep the code simple and didactic.
 
 ## References:
 * https://en.wikipedia.org/wiki/Bowyer-Watson_algorithm
