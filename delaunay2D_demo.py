@@ -23,14 +23,15 @@ if __name__ == '__main__':
     """
     # It is recommended to build a frame taylored for our data
     # dt = D.Delaunay2D() # Default frame
-    dt = Delaunay2D(center=np.mean(seeds, axis=0), radius = 50* radius)
-
+    center = np.mean(seeds, axis=0)
+    dt = Delaunay2D(center, 50 * radius)
+    
     # Insert all seeds one by one
     for s in seeds:
         dt.AddPoint(s)
-        
-    # Dump triangles 
-    print("Done DT:", len(dt.exportTriangles()), "triangles")
+
+    # Dump number of DT triangles
+    print (len(dt.exportTriangles()), "Delaunay triangles")
        
     """
     Show how to plot triangular grids.
@@ -77,12 +78,12 @@ if __name__ == '__main__':
     """
 
     """
-    # Build another DT frame
-    dt2 = Delaunay2D(center=np.mean(seeds, axis=0), radius = 100* radius)
+    # Build a new DT frame
+    dt2 = Delaunay2D(center, 50 * radius)    
     for i,s in enumerate(seeds):
+        print("Inserting seed", s)
         dt2.AddPoint(s)
         if i > 1:
-            #plt.gcf().clear()
             fig, ax = plt.subplots()
             ax.margins(0.1)
             ax.set_aspect('equal')
