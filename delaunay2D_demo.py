@@ -28,15 +28,10 @@ if __name__ == '__main__':
     # Insert all seeds one by one
     for s in seeds:
         dt.AddPoint(s)
-    
-    # Extract our result (without extended BBox coordinates)
-    dt_x, dt_y, dt_tris = dt.exportDT()
-    print("dt_tris:", len(dt_tris), "triangles")
-    print("dt_tris:\n", dt_tris)
-    # print triangles with neighbours
-    # for t in dt.triangles:        
-    #     print(t, dt.triangles[t])
-    
+        
+    # Dump triangles 
+    print("Done DT:", len(dt.exportTriangles()), "triangles")
+       
     """
     Show how to plot triangular grids.
     """
@@ -50,6 +45,7 @@ if __name__ == '__main__':
     ax.set_aspect('equal')
 
     # Plot our Delaunay triangulation (plot in blue)
+    dt_x, dt_y, dt_tris = dt.exportDT()
     ax.triplot(matplotlib.tri.Triangulation(dt_x, dt_y, dt_tris), 'bo--')
 
     # DEBUG: Use matplotlib to create a Delaunay triangulation (plot in green)
@@ -58,8 +54,8 @@ if __name__ == '__main__':
     # ax.triplot(matplotlib.tri.Triangulation(dt_x, dt_y), 'g--')
 
     # Plot the circumcircles (circles in black)
-    # for c in dt.exportCircles():
-    #   ax.add_artist(plt.Circle(c[0], c[1], color='k', fill=False, ls='dotted'))
+    # for c, r in dt.exportCircles():
+    #   ax.add_artist(plt.Circle(c, r, color='k', fill=False, ls='dotted'))
 
     # Plot voronoi diagram edges (in red)
     ve = dt.exportVoronoiEdges()
