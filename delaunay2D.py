@@ -37,8 +37,8 @@ class Delaunay2D:
         self.circles = {}
 
         # Create two CCW triangles for the frame
-        T1 = (0, 3, 1)
-        T2 = (2, 1, 3)
+        T1 = (0, 1, 3)
+        T2 = (2, 3, 1)
         self.triangles[T1] = [T2, None, None]
         self.triangles[T2] = [T1, None, None]
 
@@ -221,11 +221,55 @@ class Delaunay2D:
         # Remember to compute circumcircles if not done before
         # for t in self.triangles:
         #     self.circles[t] = self.Circumcenter(t)
-        ets = [t for t in self.triangles]
-        vor_coors = [self.circles[t][0] for t in ets]
+        index = {}
+        vor_coors = []
         vor_edges = []
-        for tidx, (a, b, c) in enumerate(ets):
+        # Build a list of coordinates and a index per triangle/circle
+        for tidx, tri in enumerate(self.triangles):
+            index[tri] = tidx;
+            vor_coors.append(self.circles[tri][0])
+
+        # Build a list of segments with per triangle index
+        for tidx, (a, b, c) in enumerate(self.triangles):
             if a > 3 and b > 3 and c > 3:
                 for neigh in self.triangles[(a, b, c)]:
-                    vor_edges.append((tidx, ets.index(neigh)))
+                    vor_edges.append((tidx, index[neigh]))
+                    
         return vor_coors, vor_edges
+        
+    def exportVoronoiRegions(self):
+        """Export coordinates and regions of Voronoi diagram as indexed data.
+        """
+        # Remember to compute circumcircles if not done before
+        # for t in self.triangles:
+        #     self.circles[t] = self.Circumcenter(t)
+        regions = {i:[] for i in range(len(self.coords))}
+        vor_coors = []
+        index={}
+        # Build a list of coordinates and a index per triangle/region
+        for tidx, (a, b, c) in enumerate(self.triangles):
+            vor_coors.append(self.circles[(a,b,c)][0])
+            # Set tidx as a index to this triangle and its rotations
+            index[(a,b,c)] = tidx;
+            index[(c,a,b)] = tidx;
+            index[(b,c,a)] = tidx;
+            # Insert triangle, rotating it so the key is the "central" vertex 
+            regions[a]+=[(c,a,b)]
+            regions[b]+=[(a,b,c)]
+            regions[c]+=[(b,c,a)]
+            
+        # regions [0..3] are not of interest...
+        for i in range(4):
+            regions[i] = []
+        # Sort each region in a coherent order, and substitude each triangle
+        # by its index
+        for v in range (4, len(self.coords)):
+            t = regions[v][0][0]
+            r=[]
+            for _ in range(len(regions[v])):
+                e = [e for e in regions[v] if e[0] == t][0]
+                r.append(index[e])
+                t = e[-1]
+            regions[v] = r
+            
+        return vor_coors, regions

@@ -56,11 +56,26 @@ if __name__ == '__main__':
 
     # Plot the circumcircles (circles in black)
     # for c, r in dt.exportCircles():
-    #   ax.add_artist(plt.Circle(c, r, color='k', fill=False, ls='dotted'))
+    #     ax.add_artist(plt.Circle(c, r, color='k', fill=False, ls='dotted'))
 
     # Plot voronoi diagram edges (in red)
-    ve = dt.exportVoronoiEdges()
-    ax.add_collection(matplotlib.collections.LineCollection(ve, colors='r'))
+    # ve = dt.exportVoronoiEdges()
+    # ax.add_collection(matplotlib.collections.LineCollection(ve, colors='r'))
+
+    # Plot voronoi regions (in red)
+    # Dump number of DT triangles
+    # vc, vr = dt.exportVoronoiRegions()
+    # Plot voronoi vertex
+    # plt.scatter([v[0] for v in vc], [v[1] for v in vc], marker='.')
+    # for i, v in enumerate(vc):
+    #     plt.annotate(i, xy=(v[0], v[1]))
+    
+    # Plot voronoi regions
+    # for r in vr:
+    #     if vr[r]:
+    #         polygon = [(vc[i][0], vc[i][1]) for i in vr[r]]
+    #         plt.fill(*zip(*polygon), alpha=0.2)
+    #         # plot a label for the region
     
     # DEBUG: plot the extended triangulation (plot in red)
     # edt_x, edt_y, edt_tris = dt.exportExtendedDT()
