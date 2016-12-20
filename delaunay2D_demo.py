@@ -85,11 +85,10 @@ if __name__ == '__main__':
     """
 
     # Plot voronoi diagram edges (in red)
-    """
     for r in vr:
         polygon = [vc[i] for i in vr[r]]     # Build polygon for each region
         plt.plot(*zip(*polygon), color="red")  # Plot filled polygon
-    """    
+        
     # Dump plot to file
     # plt.savefig('output-delaunay2D.png', dpi=96)
     # plt.savefig('output-delaunay2D.svg', dpi=96)
@@ -97,6 +96,7 @@ if __name__ == '__main__':
     plt.show()
 
     # Demo of a step-by-step triangulation plot
+    """
     # Build a new DT frame
     dt2 = Delaunay2D(center, 50 * radius)    
     for i,s in enumerate(seeds):
@@ -112,3 +112,4 @@ if __name__ == '__main__':
                 plt.fill(*zip(*polygon), fill=False, color="k")  # Plot filled polygon
 
             plt.show()
+    """
