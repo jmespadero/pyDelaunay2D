@@ -198,44 +198,6 @@ class Delaunay2D:
         ys = [p[1] for p in self.coords]
         tris = [t for t in self.triangles]
         return xs, ys, tris
-
-    def exportVoronoiEdges(self):
-        """Export the edges of Voronoi diagram as unstructured data.
-           May contain duplicates edges.
-        """
-        # Remember to compute circumcircles if not done before
-        # for t in self.triangles:
-        #     self.circles[t] = self.Circumcenter(t)
-        vor_edges = []
-        for (a, b, c) in self.triangles:
-            if a > 3 and b > 3 and c > 3:
-                t = (a, b, c)
-                for n in self.triangles[t]:
-                    vor_edges.append([self.circles[t][0], self.circles[n][0]])
-        return vor_edges
-
-    def exportVoronoiCoordEdges(self):
-        """Export coordinates and edges of Voronoi diagram as indexed data.
-           May contain duplicates
-        """
-        # Remember to compute circumcircles if not done before
-        # for t in self.triangles:
-        #     self.circles[t] = self.Circumcenter(t)
-        index = {}
-        vor_coors = []
-        vor_edges = []
-        # Build a list of coordinates and a index per triangle/circle
-        for tidx, tri in enumerate(self.triangles):
-            index[tri] = tidx;
-            vor_coors.append(self.circles[tri][0])
-
-        # Build a list of segments with per triangle index
-        for tidx, (a, b, c) in enumerate(self.triangles):
-            if a > 3 and b > 3 and c > 3:
-                for neigh in self.triangles[(a, b, c)]:
-                    vor_edges.append((tidx, index[neigh]))
-                    
-        return vor_coors, vor_edges
         
     def exportVoronoiRegions(self):
         """Export coordinates and regions of Voronoi diagram as indexed data.
@@ -249,7 +211,7 @@ class Delaunay2D:
         # Build a list of coordinates and a index per triangle/region
         for tidx, (a, b, c) in enumerate(self.triangles):
             vor_coors.append(self.circles[(a,b,c)][0])
-            # Set tidx as a index to this triangle and its rotations
+            # Set tidx as a index to this triangle and its possible rotations
             index[(a,b,c)] = tidx;
             index[(c,a,b)] = tidx;
             index[(b,c,a)] = tidx;

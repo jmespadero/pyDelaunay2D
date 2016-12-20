@@ -44,6 +44,7 @@ if __name__ == '__main__':
     fig, ax = plt.subplots()
     ax.margins(0.1)
     ax.set_aspect('equal')
+    plt.axis([-1, radius+1, -1, radius+1])
 
     # Plot our Delaunay triangulation (plot in blue)
     dt_x, dt_y, dt_tris = dt.exportDT()
@@ -53,46 +54,49 @@ if __name__ == '__main__':
     # DEBUG: It should be equal to our result in dt_tris (plot in blue)
     # DEBUG: If boundary is diferent, try to increase the value of your margin
     # ax.triplot(matplotlib.tri.Triangulation(dt_x, dt_y), 'g--')
-
-    # Plot the circumcircles (circles in black)
-    # for c, r in dt.exportCircles():
-    #     ax.add_artist(plt.Circle(c, r, color='k', fill=False, ls='dotted'))
-
-    # Plot voronoi diagram edges (in red)
-    # ve = dt.exportVoronoiEdges()
-    # ax.add_collection(matplotlib.collections.LineCollection(ve, colors='r'))
-
-    # Plot voronoi regions (in red)
-    # Dump number of DT triangles
-    # vc, vr = dt.exportVoronoiRegions()
-    # Plot voronoi vertex
-    # plt.scatter([v[0] for v in vc], [v[1] for v in vc], marker='.')
-    # for i, v in enumerate(vc):
-    #     plt.annotate(i, xy=(v[0], v[1]))
-    
-    # Plot voronoi regions
-    # for r in vr:
-    #     if vr[r]:
-    #         polygon = [(vc[i][0], vc[i][1]) for i in vr[r]]
-    #         plt.fill(*zip(*polygon), alpha=0.2)
-    #         # plot a label for the region
     
     # DEBUG: plot the extended triangulation (plot in red)
     # edt_x, edt_y, edt_tris = dt.exportExtendedDT()
-    # print("Extended dt_tris:", len(edt_tris), "triangles")
     # ax.triplot(matplotlib.tri.Triangulation(edt_x, edt_y, edt_tris), 'ro-.')
 
+    # Plot the circumcircles (circles in black)
+    """
+    for c, r in dt.exportCircles():
+        ax.add_artist(plt.Circle(c, r, color='k', fill=False, ls='dotted'))
+    """
+
+    # Build Voronoi diagram as a list of coordinates and regions
+    vc, vr = dt.exportVoronoiRegions()
+    
+    # Plot annotated voronoi vertex
+    """
+    plt.scatter([v[0] for v in vc], [v[1] for v in vc], marker='.')
+    for i, v in enumerate(vc):
+        plt.annotate(i, xy=v)
+    """
+    
+    # Plot annotated voronoi regions as filled polygons
+    """
+    for r in vr:
+        if vr[r]:
+            polygon = [vc[i] for i in vr[r]]     # Build polygon for each region
+            plt.fill(*zip(*polygon), alpha=0.2)  # Plot filled polygon
+            plt.annotate("r%d" % r, xy=np.average(polygon, axis=0))
+    """
+
+    # Plot voronoi diagram edges (in red)
+    """
+    for r in vr:
+        polygon = [vc[i] for i in vr[r]]     # Build polygon for each region
+        plt.plot(*zip(*polygon), color="red")  # Plot filled polygon
+    """    
     # Dump plot to file
     # plt.savefig('output-delaunay2D.png', dpi=96)
     # plt.savefig('output-delaunay2D.svg', dpi=96)
 
     plt.show()
 
-    """
-    Demo of a step-by-step triangulation plot
-    """
-
-    """
+    # Demo of a step-by-step triangulation plot
     # Build a new DT frame
     dt2 = Delaunay2D(center, 50 * radius)    
     for i,s in enumerate(seeds):
@@ -102,7 +106,9 @@ if __name__ == '__main__':
             fig, ax = plt.subplots()
             ax.margins(0.1)
             ax.set_aspect('equal')
-            dt_x, dt_y, dt_tris = dt2.exportDT()
-            ax.triplot(matplotlib.tri.Triangulation(dt_x, dt_y, dt_tris))
+            plt.axis([-1, radius+1, -1, radius+1])            
+            for t in dt2.exportTriangles():
+                polygon = [seeds[i] for i in t]     # Build polygon for each region
+                plt.fill(*zip(*polygon), fill=False, color="k")  # Plot filled polygon
+
             plt.show()
-    """
