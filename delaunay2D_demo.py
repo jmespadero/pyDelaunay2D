@@ -34,7 +34,7 @@ if __name__ == '__main__':
     print (len(dt.exportTriangles()), "Delaunay triangles")
        
     """
-    Show how to plot triangular grids.
+    Demostration of how to plot the data.
     """
     import matplotlib.pyplot as plt
     import matplotlib.tri
@@ -50,6 +50,12 @@ if __name__ == '__main__':
     dt_x, dt_y, dt_tris = dt.exportDT()
     ax.triplot(matplotlib.tri.Triangulation(dt_x, dt_y, dt_tris), 'bo--')
 
+    # Plot annotated Delaunay vertex (seeds)
+    """
+    for i, v in enumerate(seeds):
+        plt.annotate(i, xy=v)
+    """
+        
     # DEBUG: Use matplotlib to create a Delaunay triangulation (plot in green)
     # DEBUG: It should be equal to our result in dt_tris (plot in blue)
     # DEBUG: If boundary is diferent, try to increase the value of your margin
@@ -64,7 +70,7 @@ if __name__ == '__main__':
     for c, r in dt.exportCircles():
         ax.add_artist(plt.Circle(c, r, color='k', fill=False, ls='dotted'))
     """
-
+    
     # Build Voronoi diagram as a list of coordinates and regions
     vc, vr = dt.exportVoronoiRegions()
     
@@ -88,7 +94,7 @@ if __name__ == '__main__':
     for r in vr:
         polygon = [vc[i] for i in vr[r]]     # Build polygon for each region
         plt.plot(*zip(*polygon), color="red")  # Plot filled polygon
-        
+    
     # Dump plot to file
     # plt.savefig('output-delaunay2D.png', dpi=96)
     # plt.savefig('output-delaunay2D.svg', dpi=96)

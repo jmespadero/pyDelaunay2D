@@ -230,8 +230,9 @@ class Delaunay2D:
             r=[]
             for _ in range(len(regions[v])):
                 e = [e for e in regions[v] if e[0] == t][0]
-                r.append(index[e])
+                r.append(index[e])  # Append the index of this triangle
                 t = e[-1]
-            regions[v] = r
+            # Substitude the "list of triangles" by a "list of indexes"
+            regions[v] = r[::-1]  # Reverse list to ensure CCW order.
             
         return vor_coors, regions
