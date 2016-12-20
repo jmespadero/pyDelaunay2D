@@ -211,14 +211,14 @@ class Delaunay2D:
         # Build a list of coordinates and a index per triangle/region
         for tidx, (a, b, c) in enumerate(self.triangles):
             vor_coors.append(self.circles[(a,b,c)][0])
-            # Set tidx as a index to this triangle and its possible rotations
-            index[(a,b,c)] = tidx;
-            index[(c,a,b)] = tidx;
-            index[(b,c,a)] = tidx;
-            # Insert triangle, rotating it so the key is the "central" vertex 
-            regions[a]+=[(c,a,b)]
-            regions[b]+=[(a,b,c)]
-            regions[c]+=[(b,c,a)]
+            # Insert triangle, rotating it so the key is the "last" vertex 
+            regions[a]+=[(b, c, a)]
+            regions[b]+=[(c, a, b)]
+            regions[c]+=[(a, b, c)]
+            # Set tidx as the index to use with this triangles
+            index[(a, b, c)] = tidx;
+            index[(c, a, b)] = tidx;
+            index[(b, c, a)] = tidx;
             
         # regions [0..3] are not of interest...
         for i in range(4):
@@ -231,8 +231,8 @@ class Delaunay2D:
             for _ in range(len(regions[v])):
                 e = [e for e in regions[v] if e[0] == t][0]
                 r.append(index[e])  # Append the index of this triangle
-                t = e[-1]
+                t = e[1]            # Choose the next t to search
             # Substitude the "list of triangles" by a "list of indexes"
-            regions[v] = r[::-1]  # Reverse list to ensure CCW order.
+            regions[v] = r
             
         return vor_coors, regions
