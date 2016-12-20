@@ -21,6 +21,26 @@ If you really need to compute triangulation on big or degenerate set of points,
 try [scipy.spatial.Delaunay](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html) 
 instead.
 
+## Is it considered well-optimized?
+
+No. The code has been written to stay clear, not optimized. There is a section in 
+```AddPoint()``` that performs specially bad: 
+
+``` python
+    # Search the triangle(s) whose circumcircle contains p 
+    for T in self.triangles:
+        if self.inCircle(T, p):
+            bad_triangles.append(T)
+```
+
+There, we should avoid iterating the complete list of triangles. Best way is to 
+use a structure that allows a spatial search (as a [QuadTree](https://en.wikipedia.org/wiki/Quadtree)). 
+Then, continue the search over the neighbours of the initial search.
+
+Despite that, it will compute DT of less than 1000 points in a reasonable time.
+
+Again, just pretend to keep the code simple, didactic and with minimal dependencies.
+
 ## So why?
 Mainly, to provide a didactic implementation of the algorithm. You can use:
 
@@ -41,28 +61,8 @@ print (dt.exportTriangles())
 ```
 as a minimal example of build a triangulation and dump the triangles.
 
-Also, because sometimes it is not possible to import the complete scipy.spatial
+Also, because sometimes it is not possible/worth to import the complete scipy.spatial
 package (for example, when running a script inside of [blender](https://www.blender.org/) )
-
-## Is it considered well-optimized?
-
-No. The code has been written to be clear, not optimized. There is a section in 
-```AddPoint()``` that performs specially bad: 
-
-``` python
-    # Search the triangle(s) whose circumcircle contains p 
-    for T in self.triangles:
-        if self.inCircle(T, p):
-            bad_triangles.append(T)
-```
-
-There, we should avoid iterating the complete list of triangles. Best way is to 
-use a structure that allows a spatial search (as a [QuadTree](https://en.wikipedia.org/wiki/Quadtree)). 
-Then, continue the search over the neighbours of the initial search.
-
-Despite that, it will compute DT of less than 1000 points in a reasonable time.
-
-Again, just pretend to keep the code simple, didactic and with minimal dependencies.
 
 ## References:
 * https://en.wikipedia.org/wiki/Bowyer-Watson_algorithm
