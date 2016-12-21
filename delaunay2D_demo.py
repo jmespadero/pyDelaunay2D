@@ -86,16 +86,15 @@ if __name__ == '__main__':
     # Plot annotated voronoi regions as filled polygons
     """
     for r in vr:
-        if vr[r]:
-            polygon = [vc[i] for i in vr[r]]     # Build polygon for each region
-            plt.fill(*zip(*polygon), alpha=0.2)  # Plot filled polygon
-            plt.annotate("r%d" % r, xy=np.average(polygon, axis=0))
+        polygon = [vc[i] for i in vr[r]]     # Build polygon for each region
+        plt.fill(*zip(*polygon), alpha=0.2)  # Plot filled polygon
+        plt.annotate("r%d" % r, xy=np.average(polygon, axis=0))
     """
 
     # Plot voronoi diagram edges (in red)
     for r in vr:
-        polygon = [vc[i] for i in vr[r]]     # Build polygon for each region
-        plt.plot(*zip(*polygon), color="red")  # Plot filled polygon
+        polygon = [vc[i] for i in vr[r]]       # Build polygon for each region
+        plt.plot(*zip(*polygon), color="red")  # Plot polygon edges in red
     
     # Dump plot to file
     # plt.savefig('output-delaunay2D.png', dpi=96)
@@ -103,21 +102,24 @@ if __name__ == '__main__':
 
     plt.show()
 
-    # Demo of a step-by-step triangulation plot
+    # Plot a step-by-step triangulation
     """
-    # Build a new DT frame
+    # Starts from a new Delaunay2D frame
     dt2 = Delaunay2D(center, 50 * radius)    
     for i,s in enumerate(seeds):
-        print("Inserting seed", s)
+        print("Inserting seed", i, s)
         dt2.AddPoint(s)
         if i > 1:
             fig, ax = plt.subplots()
             ax.margins(0.1)
             ax.set_aspect('equal')
             plt.axis([-1, radius+1, -1, radius+1])            
+            for i, v in enumerate(seeds):
+                plt.annotate(i, xy=v)              # Plot all seeds
             for t in dt2.exportTriangles():
                 polygon = [seeds[i] for i in t]     # Build polygon for each region
-                plt.fill(*zip(*polygon), fill=False, color="k")  # Plot filled polygon
+                plt.fill(*zip(*polygon), fill=False, color="b")  # Plot filled polygon
 
             plt.show()
     """
+    
