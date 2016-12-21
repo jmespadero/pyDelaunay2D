@@ -180,24 +180,20 @@ class Delaunay2D:
                 for (a, b, c) in self.triangles if a > 3 and b > 3 and c > 3]
 
     def exportDT(self):
-        """Export the current Delaunay coordinates and triangles.
+        """Export the current set of Delaunay coordinates and triangles.
         """
         # Filter out coordinates in the extended BBox
-        xs = [p[0] for p in self.coords[4:]]
-        ys = [p[1] for p in self.coords[4:]]
+        coord = self.coords[4:]
 
         # Filter out triangles with any vertex in the extended BBox
         tris = [(a-4, b-4, c-4)
                 for (a, b, c) in self.triangles if a > 3 and b > 3 and c > 3]
-        return xs, ys, tris
+        return coord, tris
 
     def exportExtendedDT(self):
         """Export the Extended Delaunay Triangulation (with the frame vertex).
         """
-        xs = [p[0] for p in self.coords]
-        ys = [p[1] for p in self.coords]
-        tris = [t for t in self.triangles]
-        return xs, ys, tris
+        return self.coords, list(self.triangles)
         
     def exportVoronoiRegions(self):
         """Export coordinates and regions of Voronoi diagram as indexed data.

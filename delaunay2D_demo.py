@@ -47,8 +47,9 @@ if __name__ == '__main__':
     plt.axis([-1, radius+1, -1, radius+1])
 
     # Plot our Delaunay triangulation (plot in blue)
-    dt_x, dt_y, dt_tris = dt.exportDT()
-    ax.triplot(matplotlib.tri.Triangulation(dt_x, dt_y, dt_tris), 'bo--')
+    cx, cy = zip(*seeds)
+    dt_tris = dt.exportTriangles()
+    ax.triplot(matplotlib.tri.Triangulation(cx, cy, dt_tris), 'bo--')
 
     # Plot annotated Delaunay vertex (seeds)
     """
@@ -59,10 +60,11 @@ if __name__ == '__main__':
     # DEBUG: Use matplotlib to create a Delaunay triangulation (plot in green)
     # DEBUG: It should be equal to our result in dt_tris (plot in blue)
     # DEBUG: If boundary is diferent, try to increase the value of your margin
-    # ax.triplot(matplotlib.tri.Triangulation(dt_x, dt_y), 'g--')
+    # ax.triplot(matplotlib.tri.Triangulation(*zip(*seeds)), 'g--')
     
     # DEBUG: plot the extended triangulation (plot in red)
-    # edt_x, edt_y, edt_tris = dt.exportExtendedDT()
+    # edt_coords, edt_tris = dt.exportExtendedDT()
+    # edt_x, edt_y = zip(*edt_coords)
     # ax.triplot(matplotlib.tri.Triangulation(edt_x, edt_y, edt_tris), 'ro-.')
 
     # Plot the circumcircles (circles in black)
