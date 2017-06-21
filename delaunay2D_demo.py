@@ -28,7 +28,7 @@ if __name__ == '__main__':
     
     # Insert all seeds one by one
     for s in seeds:
-        dt.AddPoint(s)
+        dt.addPoint(s)
 
     # Dump number of DT triangles
     print (len(dt.exportTriangles()), "Delaunay triangles")
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     dt2 = Delaunay2D(center, 50 * radius)    
     for i,s in enumerate(seeds):
         print("Inserting seed", i, s)
-        dt2.AddPoint(s)
+        dt2.addPoint(s)
         if i > 1:
             fig, ax = plt.subplots()
             ax.margins(0.1)

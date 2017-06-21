@@ -12,7 +12,7 @@ seeds = np.random.random((10, 2))
 # Create delaunay Triangulation
 dt = Delaunay2D()
 for s in seeds:
-    dt.AddPoint(s)
+    dt.addPoint(s)
 
 # Dump triangles 
 print (dt.exportTriangles())

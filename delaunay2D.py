@@ -44,10 +44,10 @@ class Delaunay2D:
 
         # Compute circumcenters and circumradius for each triangle
         for t in self.triangles:
-            self.circles[t] = self.Circumcenter(t)
+            self.circles[t] = self.circumcenter(t)
 
-    def Circumcenter(self, tri):
-        """Compute Circumcenter and circumradius of a triangle in 2D.
+    def circumcenter(self, tri):
+        """Compute circumcenter and circumradius of a triangle in 2D.
         Uses an extension of the method described here:
         http://www.ics.uci.edu/~eppstein/junkyard/circumcenter.html
         """
@@ -83,8 +83,8 @@ class Delaunay2D:
         m = np.hstack((m1, m2))    # The 3x3 matrix to check
         return np.linalg.det(m) <= 0
 
-    def AddPoint(self, p):
-        """Add a new point to the current DT, and refine it using Bowyer-Watson.
+    def addPoint(self, p):
+        """Add a point to the current DT, and refine it using Bowyer-Watson.
         """
         p = np.asarray(p)
         idx = len(self.coords)
@@ -137,7 +137,7 @@ class Delaunay2D:
             T = (idx, e0, e1)
 
             # Store circumcenter and circumradius of the triangle
-            self.circles[T] = self.Circumcenter(T)
+            self.circles[T] = self.circumcenter(T)
 
             # Set opposite triangle of the edge as neighbour of T
             self.triangles[T] = [tri_op, None, None]
@@ -172,7 +172,7 @@ class Delaunay2D:
         """
         # Remember to compute circumcircles if not done before
         # for t in self.triangles:
-        #     self.circles[t] = self.Circumcenter(t)
+        #     self.circles[t] = self.circumcenter(t)
 
         # Filter out triangles with any vertex in the extended BBox
         # Do sqrt of radius before of return
@@ -194,40 +194,40 @@ class Delaunay2D:
         """Export the Extended Delaunay Triangulation (with the frame vertex).
         """
         return self.coords, list(self.triangles)
-        
+
     def exportVoronoiRegions(self):
         """Export coordinates and regions of Voronoi diagram as indexed data.
         """
         # Remember to compute circumcircles if not done before
         # for t in self.triangles:
-        #     self.circles[t] = self.Circumcenter(t)
-        useVertex = {i:[] for i in range(len(self.coords))}
+        #     self.circles[t] = self.circumcenter(t)
+        useVertex = {i: [] for i in range(len(self.coords))}
         vor_coors = []
-        index={}
+        index = {}
         # Build a list of coordinates and a index per triangle/region
         for tidx, (a, b, c) in enumerate(self.triangles):
-            vor_coors.append(self.circles[(a,b,c)][0])
-            # Insert triangle, rotating it so the key is the "last" vertex 
-            useVertex[a]+=[(b, c, a)]
-            useVertex[b]+=[(c, a, b)]
-            useVertex[c]+=[(a, b, c)]
+            vor_coors.append(self.circles[(a, b, c)][0])
+            # Insert triangle, rotating it so the key is the "last" vertex
+            useVertex[a] += [(b, c, a)]
+            useVertex[b] += [(c, a, b)]
+            useVertex[c] += [(a, b, c)]
             # Set tidx as the index to use with this triangles
-            index[(a, b, c)] = tidx;
-            index[(c, a, b)] = tidx;
-            index[(b, c, a)] = tidx;
-            
+            index[(a, b, c)] = tidx
+            index[(c, a, b)] = tidx
+            index[(b, c, a)] = tidx
+
         # init regions per coordinate dictionary
         regions = {}
         # Sort each region in a coherent order, and substitude each triangle
         # by its index
-        for i in range (4, len(self.coords)):
+        for i in range(4, len(self.coords)):
             v = useVertex[i][0][0]  # Get a vertex of a triangle
-            r=[]
+            r = []
             for _ in range(len(useVertex[i])):
                 # Search the triangle beginning with vertex v
                 t = [t for t in useVertex[i] if t[0] == v][0]
                 r.append(index[t])  # Add the index of this triangle to region
                 v = t[1]            # Choose the next vertex to search
-            regions[i-4]=r          # Store region.
-            
+            regions[i-4] = r        # Store region.
+
         return vor_coors, regions

@@ -24,7 +24,7 @@ instead.
 ## Is it considered well-optimized?
 
 No. The code has been written to stay clear, not optimized. There is a section in 
-```AddPoint()``` that performs specially bad: 
+```addPoint()``` that performs specially bad: 
 
 ``` python
     # Search the triangle(s) whose circumcircle contains p 
@@ -54,7 +54,7 @@ seeds = np.random.random((10, 2))
 # Create delaunay Triangulation
 dt = Delaunay2D()
 for s in seeds:
-    dt.AddPoint(s)
+    dt.addPoint(s)
 
 # Dump triangles 
 print (dt.exportTriangles())
