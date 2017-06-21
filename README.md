@@ -23,8 +23,9 @@ instead.
 
 ## Is it considered well-optimized?
 
-No. The code has been written to stay clear, not optimized. There is a section in 
-```addPoint()``` that performs specially bad: 
+No. The code has been written to stay clear, easy to read by novices,
+instead of highly-optimized. There is a section in ```addPoint()``` that 
+performs specially bad: 
 
 ``` python
     # Search the triangle(s) whose circumcircle contains p 
@@ -33,8 +34,8 @@ No. The code has been written to stay clear, not optimized. There is a section i
             bad_triangles.append(T)
 ```
 
-There, we should avoid iterating the complete list of triangles. Best way is to 
-use a structure that allows a spatial search (as a [QuadTree](https://en.wikipedia.org/wiki/Quadtree)). 
+There, we should avoid iterating over the complete list of triangles. Best way 
+is to use a structure that allows a spatial search (as a [QuadTree](https://en.wikipedia.org/wiki/Quadtree)). 
 Then, continue the search over the neighbours of the initial search.
 
 Despite that, it will compute DT of less than 1000 points in a reasonable time.
@@ -62,7 +63,8 @@ print (dt.exportTriangles())
 as a minimal example of build a triangulation and dump the triangles.
 
 Also, because sometimes it is not possible/worth to import the complete scipy.spatial
-package (for example, when running a script inside of [blender](https://www.blender.org/) )
+package (for example, when running a script inside of [blender](https://www.blender.org/)
+python interpreter)
 
 ## References:
 * https://en.wikipedia.org/wiki/Bowyer-Watson_algorithm
