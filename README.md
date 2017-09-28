@@ -1,7 +1,7 @@
 PyDelaunay2D
 ==============
 
-A Simple Delaunay and Voronoi constructor in 2D. Written by [Jose M. Espadero](https://github.com/jmespadero/pyDelaunay2D)
+A Simple Delaunay triangulation and Voronoi diagram constructor in 2D. Written by [Jose M. Espadero](https://github.com/jmespadero/pyDelaunay2D)
 
 ![](output-delaunay2D.png)
 
