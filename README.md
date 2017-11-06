@@ -21,9 +21,9 @@ If you really need to compute triangulation on big or degenerate set of points,
 try [scipy.spatial.Delaunay](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html) 
 instead.
 
-## Is it considered well-optimized?
+## Is it fast?
 
-No. The code has been written to stay clear, easy to read by novices,
+No. This code has been written to stay clear, easy to read by novices,
 instead of highly-optimized. There is a section in ```addPoint()``` that 
 performs specially bad: 
 
@@ -34,7 +34,7 @@ performs specially bad:
             bad_triangles.append(T)
 ```
 
-There, we should avoid iterating over the complete list of triangles. Best way 
+Here, we should avoid iterating over the complete list of triangles. Best way 
 is to use a structure that allows a spatial search (as a [QuadTree](https://en.wikipedia.org/wiki/Quadtree)). 
 Then, continue the search over the neighbours of the initial search.
 
@@ -42,7 +42,7 @@ Despite that, it will compute DT of less than 1000 points in a reasonable time.
 
 Again, just pretend to keep the code simple, didactic and with minimal dependencies.
 
-## So why?
+## Why did you write it?
 Mainly, to provide a didactic implementation of the algorithm. You can use:
 
 ``` python 
