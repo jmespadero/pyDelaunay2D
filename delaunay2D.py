@@ -204,14 +204,14 @@ class Delaunay2D:
         useVertex = {i: [] for i in range(len(self.coords))}
         vor_coors = []
         index = {}
-        # Build a list of coordinates and a index per triangle/region
-        for tidx, (a, b, c) in enumerate(self.triangles):
+        # Build a list of coordinates and one index per triangle/region
+        for tidx, (a, b, c) in enumerate(sorted(self.triangles)):
             vor_coors.append(self.circles[(a, b, c)][0])
             # Insert triangle, rotating it so the key is the "last" vertex
             useVertex[a] += [(b, c, a)]
             useVertex[b] += [(c, a, b)]
             useVertex[c] += [(a, b, c)]
-            # Set tidx as the index to use with this triangles
+            # Set tidx as the index to use with this triangle
             index[(a, b, c)] = tidx
             index[(c, a, b)] = tidx
             index[(b, c, a)] = tidx
