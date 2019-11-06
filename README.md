@@ -32,12 +32,12 @@ from delaunay2D import Delaunay2D
 # Create a random set of points
 seeds = np.random.random((10, 2))
 
-# Create delaunay Triangulation
+# Compute Delaunay Triangulation and insert points one by one
 dt = Delaunay2D()
 for s in seeds:
     dt.addPoint(s)
 
-# Dump triangles 
+# Dump triangles to console
 print (dt.exportTriangles())
 ```
 
