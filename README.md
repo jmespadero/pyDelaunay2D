@@ -21,29 +21,9 @@ If you really need to compute triangulation on big or degenerate set of points,
 try [scipy.spatial.Delaunay](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html) 
 instead.
 
-## Is it fast?
+## How can I use it in my projects?
 
-No. This code has been written to stay clear, easy to read by novices,
-instead of highly-optimized. There is a section in ```addPoint()``` that 
-performs specially bad: 
-
-``` python
-    # Search the triangle(s) whose circumcircle contains p 
-    for T in self.triangles:
-        if self.inCircle(T, p):
-            bad_triangles.append(T)
-```
-
-Here, we should avoid iterating over the complete list of triangles. Best way 
-is to use a structure that allows a spatial search (as a [QuadTree](https://en.wikipedia.org/wiki/Quadtree)). 
-Then, continue the search over the neighbours of the initial search.
-
-Despite that, it will compute DT of less than 1000 points in a reasonable time.
-
-Again, just pretend to keep the code simple, didactic and with minimal dependencies.
-
-## Why did you write it?
-Mainly, to provide a didactic implementation of the algorithm. You can use:
+Here is a minimal example of building a triangulation and dump the result to console.
 
 ``` python 
 import numpy as np
@@ -60,11 +40,35 @@ for s in seeds:
 # Dump triangles 
 print (dt.exportTriangles())
 ```
-as a minimal example of build a triangulation and dump the triangles.
 
-Also, because sometimes it is not possible/worth to import the complete scipy.spatial
-package (for example, when running a script inside of [blender](https://www.blender.org/)
-python interpreter)
+## Is it fast?
+
+No. This code has been written to stay simple, easy to read by beginers and with minimal
+dependencies instead of highly-optimized. There is a section in ```addPoint()``` method that 
+performs specially bad if you have a big set of input points: 
+
+``` python
+    # Search the triangle(s) whose circumcircle contains p 
+    for T in self.triangles:
+        if self.inCircle(T, p):
+            bad_triangles.append(T)
+```
+
+Here, we should avoid iterating over the complete list of triangles. Best way is to use a 
+structure that allows a spatial search (as a [QuadTree](https://en.wikipedia.org/wiki/Quadtree)). 
+Then, continue the search over the neighbours of the initial search.
+
+Despite that, it will compute DT of less than 1000 points in a reasonable time. If you really 
+need to compute triangulation on huge or degenerate sets of points, try
+[scipy.spatial.Delaunay](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html) 
+
+
+## Why did you write it?
+
+Mainly, to provide a didactic implementation of the algorithm. Also, because sometimes it is 
+not possible/worth to import the complete scipy.spatial package (for example, when running a 
+script inside of python interpreter included in [blender](https://www.blender.org/) )
+
 
 ## References:
 * https://en.wikipedia.org/wiki/Bowyer-Watson_algorithm
