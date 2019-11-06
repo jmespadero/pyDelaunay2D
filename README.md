@@ -45,7 +45,7 @@ print ("Delaunay triangles:\n", dt.exportTriangles())
 
 ## Is it fast?
 
-No. This code has been written to stay simple, easy to read by beginers and with minimal
+No. This code has been written to stay simple, easy to read by beginners and with minimal
 dependencies instead of highly-optimized. There is a section in ```addPoint()``` method that 
 performs specially bad if you have a big set of input points: 
 
