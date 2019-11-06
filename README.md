@@ -25,7 +25,7 @@ instead.
 
 Here is a minimal example of building a triangulation and dump the result to console.
 
-``` python 
+```python 
 import numpy as np
 from delaunay2D import Delaunay2D
 
@@ -40,6 +40,7 @@ for s in seeds:
 # Dump points and triangles to console
 print("Input points:\n", seeds)
 print ("Delaunay triangles:\n", dt.exportTriangles())
+
 ```
 
 ## Is it fast?
@@ -48,7 +49,7 @@ No. This code has been written to stay simple, easy to read by beginers and with
 dependencies instead of highly-optimized. There is a section in ```addPoint()``` method that 
 performs specially bad if you have a big set of input points: 
 
-``` python
+```python
     # Search the triangle(s) whose circumcircle contains p 
     for T in self.triangles:
         if self.inCircle(T, p):
@@ -61,7 +62,8 @@ Then, continue the search over the neighbours of the initial search.
 
 Despite that, it will compute DT of less than 1000 points in a reasonable time. If you really 
 need to compute triangulation on huge or degenerate sets of points, try
-[scipy.spatial.Delaunay](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html) 
+[scipy.spatial.Delaunay](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html),
+which is based on [Qhull library](http://www.qhull.org/)
 
 
 ## Why did you write it?
